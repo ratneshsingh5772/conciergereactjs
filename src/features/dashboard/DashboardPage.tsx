@@ -1,18 +1,69 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchDashboardStats } from './dashboardSlice';
-import { Loader2, TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowLeft } from 'lucide-react';
+import { fetchBudgets, createCategoryBudget, createTotalBudget, updateBudget, fetchCategories } from '../budget/budgetSlice';
+import { Loader2, TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowLeft, Plus, Settings } from 'lucide-react';
+import BudgetModal from '../budget/BudgetModal';
+import type { BudgetPeriod, Budget } from '../budget/types';
 
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector((state) => state.dashboard);
+  const { budgets, categories } = useAppSelector((state) => state.budget);
+  
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
 
   useEffect(() => {
     dispatch(fetchDashboardStats());
+    dispatch(fetchBudgets('MONTHLY'));
+    dispatch(fetchCategories());
   }, [dispatch]);
 
-  if (loading) {
+  const handleSaveBudget = async (formData: { categoryName?: string; budgetAmount: number; budgetPeriod: BudgetPeriod; alertThreshold: number; isTotalBudget: boolean }) => {
+    if (editingBudget) {
+      await dispatch(updateBudget({
+        id: editingBudget.id,
+        data: {
+          budgetAmount: formData.budgetAmount,
+          budgetPeriod: formData.budgetPeriod,
+          alertThreshold: formData.alertThreshold
+        }
+      }));
+    } else if (formData.isTotalBudget) {
+      await dispatch(createTotalBudget({
+        budgetAmount: formData.budgetAmount,
+        budgetPeriod: formData.budgetPeriod,
+        alertThreshold: formData.alertThreshold
+      }));
+    } else {
+      await dispatch(createCategoryBudget({
+        categoryName: formData.categoryName,
+        budgetAmount: formData.budgetAmount,
+        budgetPeriod: formData.budgetPeriod,
+        alertThreshold: formData.alertThreshold
+      }));
+    }
+    // Refresh data
+    dispatch(fetchDashboardStats());
+    dispatch(fetchBudgets('MONTHLY'));
+  };
+
+  const openEditBudget = (categoryName: string) => {
+    const budget = budgets.find(b => b.categoryName === categoryName);
+    if (budget) {
+      setEditingBudget(budget);
+      setIsBudgetModalOpen(true);
+    } else {
+      // Pre-fill for new budget
+      setEditingBudget(null); // Reset editing state
+      // You might want to pass initial category name to modal if needed
+      setIsBudgetModalOpen(true);
+    }
+  };
+
+  if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-full min-h-[50vh]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -32,6 +83,11 @@ const DashboardPage: React.FC = () => {
     return null;
   }
 
+  // Use fetched categories if available, otherwise fallback to dashboard data
+  const availableCategories = categories.length > 0 
+    ? categories.map(c => c.name) 
+    : data.categoryBreakdown.map(c => c.categoryName);
+
   return (
     <div className="p-4 md:p-6 space-y-6 md:space-y-8 bg-slate-50 min-h-screen font-sans">
       {/* Header */}
@@ -45,10 +101,19 @@ const DashboardPage: React.FC = () => {
             <p className="text-slate-500 text-xs md:text-sm mt-1">Track your spending and manage your budget</p>
           </div>
         </div>
-        <div className="flex items-center justify-between md:justify-end w-full md:w-auto">
+        <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
           <span className="md:hidden text-sm font-medium text-slate-500">
             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </span>
+          
+          <button 
+            onClick={() => { setEditingBudget(null); setIsBudgetModalOpen(true); }}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-sm font-medium shadow-sm shadow-indigo-200 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Set Budget</span>
+          </button>
+
           <span className="hidden md:block px-4 py-2 bg-white rounded-full text-sm font-medium text-slate-600 shadow-sm border border-slate-200">
             {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </span>
@@ -101,18 +166,31 @@ const DashboardPage: React.FC = () => {
         <div className="lg:col-span-2 bg-white p-5 md:p-8 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-lg md:text-xl font-bold text-slate-900">Budget Status</h2>
-            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">View Details</button>
+            <button 
+              onClick={() => { setEditingBudget(null); setIsBudgetModalOpen(true); }}
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+            >
+              Manage Budgets
+            </button>
           </div>
           <div className="space-y-8">
             {data.budgetStatus.map((budget) => (
-              <div key={budget.categoryName} className="group">
+              <button 
+                key={budget.categoryName} 
+                className="w-full text-left group cursor-pointer block" 
+                onClick={() => openEditBudget(budget.categoryName)}
+                type="button"
+              >
                 <div className="flex justify-between items-end mb-3">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl shadow-sm group-hover:scale-105 transition-transform duration-200">
                       {budget.categoryIcon}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-slate-900">{budget.categoryName}</h4>
+                      <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                        {budget.categoryName}
+                        <Settings className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </h4>
                       <p className="text-sm text-slate-500 mt-0.5">
                         <span className="font-medium text-slate-700">${budget.spent.toFixed(0)}</span>
                         <span className="mx-1">/</span>
@@ -128,12 +206,12 @@ const DashboardPage: React.FC = () => {
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                   <div 
-                    className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                    className={`h-full rounded-full transition-all duration-1000 ease-out w-(--width) ${
                       budget.isOverBudget 
-                        ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
-                        : 'bg-gradient-to-r from-indigo-500 to-violet-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]'
+                        ? 'bg-linear-to-r from-red-500 to-red-600 shadow-[0_0_10px_rgba(239,68,68,0.4)]' 
+                        : 'bg-linear-to-r from-indigo-500 to-violet-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]'
                     }`} 
-                    style={{ width: `${Math.min(budget.percentageUsed, 100)}%` }}
+                    style={{ '--width': `${Math.min(budget.percentageUsed, 100)}%` } as React.CSSProperties}
                   ></div>
                 </div>
                 <div className="flex justify-end mt-2">
@@ -141,7 +219,7 @@ const DashboardPage: React.FC = () => {
                         {budget.isOverBudget ? `Over by $${Math.abs(budget.remaining).toFixed(0)}` : `${budget.remaining.toFixed(0)} remaining`}
                     </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -154,8 +232,8 @@ const DashboardPage: React.FC = () => {
               <div key={cat.categoryName} className="flex items-center justify-between p-4 rounded-xl border border-slate-50 hover:border-slate-100 hover:bg-slate-50/50 transition-all duration-200 group cursor-default">
                 <div className="flex items-center gap-4">
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform duration-200" 
-                    style={{ backgroundColor: `${cat.categoryColor}15`, color: cat.categoryColor }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform duration-200 bg-(--bg-color) text-(--text-color)" 
+                    style={{ '--bg-color': `${cat.categoryColor}15`, '--text-color': cat.categoryColor } as React.CSSProperties}
                   >
                     {cat.categoryIcon}
                   </div>
@@ -197,7 +275,7 @@ const DashboardPage: React.FC = () => {
                     {new Date(expense.expenseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </td>
                   <td className="px-6 md:px-8 py-5">
-                    <p className="text-sm font-semibold text-slate-900 min-w-[150px]">{expense.description}</p>
+                    <p className="text-sm font-semibold text-slate-900 min-w-37.5">{expense.description}</p>
                     {expense.originalMessage && (
                       <p className="text-xs text-slate-400 mt-1 truncate max-w-xs">"{expense.originalMessage}"</p>
                     )}
@@ -218,6 +296,14 @@ const DashboardPage: React.FC = () => {
           </table>
         </div>
       </div>
+      {/* Budget Modal */}
+      <BudgetModal
+        isOpen={isBudgetModalOpen}
+        onClose={() => setIsBudgetModalOpen(false)}
+        onSubmit={handleSaveBudget}
+        initialData={editingBudget || undefined}
+        categories={availableCategories}
+      />
     </div>
   );
 };

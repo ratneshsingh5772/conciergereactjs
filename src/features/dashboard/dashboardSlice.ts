@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 import type { DashboardData } from './types';
 import * as dashboardAPI from './dashboardAPI';
 
@@ -20,8 +21,9 @@ export const fetchDashboardStats = createAsyncThunk(
     try {
       const response = await dashboardAPI.getDashboardStats();
       return response.data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to fetch dashboard stats');
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch dashboard stats');
     }
   }
 );
