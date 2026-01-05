@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import ChatPage from './features/chat/ChatPage';
+import DashboardPage from './features/dashboard/DashboardPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<ChatPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

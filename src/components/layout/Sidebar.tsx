@@ -1,4 +1,5 @@
-import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard } from 'lucide-react';
 import type { User } from '../../features/auth/types';
 import type { ChatStats } from '../../features/chat/chatAPI';
 
@@ -73,6 +74,16 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
             </div>
             <span className="text-sm">New Chat</span>
           </button>
+
+          <Link
+            to="/dashboard"
+            className="w-full flex items-center gap-3 py-3 px-4 mt-2 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-full transition-all duration-200 shadow-sm hover:shadow-md font-medium group"
+          >
+            <div className="bg-purple-50 p-1.5 rounded-full group-hover:bg-purple-100 transition-colors">
+              <LayoutDashboard className="w-4 h-4 text-purple-600" />
+            </div>
+            <span className="text-sm">Dashboard</span>
+          </Link>
         </div>
 
         <div className="space-y-6">
