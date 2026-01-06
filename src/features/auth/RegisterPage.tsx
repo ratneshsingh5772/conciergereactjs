@@ -37,15 +37,15 @@ const RegisterPage = () => {
             <div className="absolute top-[40%] right-[40%] w-[20%] h-[20%] rounded-full bg-teal-500/10 blur-[100px]" />
         </div>
 
-        <div className="flex flex-col md:flex-row w-full max-w-[1600px] mx-auto relative z-10 min-h-screen">
+        <div className="flex flex-col md:flex-row w-full max-w-400 mx-auto relative z-10 min-h-screen">
             
             {/* Left Panel: Brand & Value Prop */}
             <div className="flex-1 flex flex-col justify-center p-8 md:p-16 lg:p-24 text-white relative order-2 md:order-1">
                  <div className="hidden md:flex absolute top-16 left-16 items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
                         <BrainCircuit className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-200">RUDRA AI</span>
+                    <span className="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-linear-to-r from-white to-emerald-200">RUDRA AI</span>
                  </div>
 
                  <div className="max-w-xl space-y-8 mt-12 md:mt-0">
@@ -56,7 +56,7 @@ const RegisterPage = () => {
                     
                     <h1 className="text-5xl md:text-6xl font-bold leading-tight">
                         Initialize Your<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-teal-400 to-cyan-400">
                             Financial Evolution
                         </span>
                     </h1>
@@ -93,7 +93,7 @@ const RegisterPage = () => {
                 <div className="w-full max-w-md bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-black/20 relative overflow-hidden group my-8 md:my-0">
                     
                     {/* Decorative header gradient */}
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+                    <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
 
                     <div className="mb-8">
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Create Account</h2>
@@ -203,7 +203,7 @@ const RegisterPage = () => {
                             disabled={loading}
                             className="w-full relative overflow-hidden flex justify-center items-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg active:scale-[0.99] group mt-2"
                         >
-                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[length:200%_100%] animate-gradient" />
+                            <div className="absolute inset-0 w-full h-full bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-size-[200%_100%] animate-gradient" />
                              <span className="relative flex items-center gap-2">
                                 {loading ? (
                                     <>
