@@ -26,8 +26,10 @@ const MessageBubble = ({ role, content, isStreaming, currencyCode }: MessageBubb
       )}>
         {/* Avatar - Only for Bot */}
         {!isUser && (
-          <div className="shrink-0 h-8 w-8 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center mt-1">
-            <Bot className="h-5 w-5 text-blue-600" />
+          <div className="shrink-0 h-8 w-8 mt-1 flex items-center justify-center">
+             <div className="w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
+                <Bot className="h-4 w-4 text-white" />
+             </div>
           </div>
         )}
 
@@ -36,7 +38,7 @@ const MessageBubble = ({ role, content, isStreaming, currencyCode }: MessageBubb
           className={cn(
             "relative text-[15px] md:text-[16px] leading-7",
             isUser 
-              ? "bg-[#f0f4f9] text-[#1f1f1f] px-5 py-3.5 rounded-3xl rounded-tr-sm" 
+              ? "bg-[#f0f4f9] text-[#1f1f1f] px-5 py-3 rounded-2xl" 
               : "bg-transparent text-[#1f1f1f] px-0 py-1"
           )}
         >

@@ -54,7 +54,7 @@ const ChatInput = ({ onSend, disabled, isStreaming }: ChatInputProps) => {
         <button
           type="submit"
           disabled={!input.trim() || disabled}
-          className="shrink-0 p-3 mb-1 mr-1 rounded-full bg-linear-to-r from-emerald-500 to-cyan-500 text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center justify-center"
+          className="shrink-0 p-3 mb-1 mr-1 rounded-full bg-black text-white hover:bg-gray-800 disabled:opacity-20 disabled:bg-transparent disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
         >
           {isStreaming ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -63,8 +63,8 @@ const ChatInput = ({ onSend, disabled, isStreaming }: ChatInputProps) => {
           )}
         </button>
       </form>
-      <div className="text-center mt-3 text-[11px] text-slate-400 font-medium tracking-wide">
-        Rudra AI can make mistakes. Please verify important financial information.
+      <div className="text-center mt-3 text-[11px] text-[#444746] font-medium tracking-wide">
+        Rudra AI may display inaccurate info, including about people, so double-check its responses.
       </div>
     </div>
   );
