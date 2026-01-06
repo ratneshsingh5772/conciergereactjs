@@ -13,7 +13,7 @@ export interface CreateCategoryRequest {
   color?: string;
 }
 
-export interface UpdateCategoryRequest extends CreateCategoryRequest {}
+export type UpdateCategoryRequest = CreateCategoryRequest;
 
 export interface CategoryResponse {
   success: boolean;

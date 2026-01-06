@@ -1,10 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, ArrowLeft, Loader2, AlertCircle, LayoutGrid, List as ListIcon, X } from 'lucide-react';
 import { fetchCategories, createCategory, updateCategory, deleteCategory, clearError } from './categoriesSlice';
 import CategoryModal from './CategoryModal';
 import type { Category, CreateCategoryRequest } from './types';
+
+const CategoryIcon = ({ icon, color = '#3b82f6', className }: { icon?: string, color?: string, className: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.setProperty('--category-bg', `${color}15`);
+      ref.current.style.setProperty('--category-color', color);
+    }
+  }, [color]);
+
+  return (
+    <div 
+      ref={ref}
+      className={`flex items-center justify-center bg-(--category-bg) text-(--category-color) ${className}`}
+    >
+      {icon || '🏷️'}
+    </div>
+  );
+};
 
 const CategoriesPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -122,12 +142,11 @@ const CategoriesPage: React.FC = () => {
                 ></div>
                 
                 <div className="flex justify-between items-start mb-4">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm transition-transform group-hover:scale-110 bg-(--category-bg) text-(--category-color)"
-                    style={{ '--category-bg': `${category.color}15`, '--category-color': category.color } as React.CSSProperties}
-                  >
-                    {category.icon || '🏷️'}
-                  </div>
+                  <CategoryIcon 
+                    icon={category.icon} 
+                    color={category.color}
+                    className="w-12 h-12 rounded-xl text-2xl shadow-sm transition-transform group-hover:scale-110"
+                  />
                   
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
@@ -185,12 +204,11 @@ const CategoriesPage: React.FC = () => {
                   {items.map((category) => (
                     <tr key={category.id} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="px-6 py-4">
-                         <div 
-                            className="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-(--category-bg) text-(--category-color)"
-                            style={{ '--category-bg': `${category.color}15`, '--category-color': category.color } as React.CSSProperties}
-                          >
-                            {category.icon || '🏷️'}
-                          </div>
+                         <CategoryIcon
+                            icon={category.icon}
+                            color={category.color}
+                            className="w-10 h-10 rounded-lg text-xl"
+                          />
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-semibold text-slate-900">{category.name}</span>
