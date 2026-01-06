@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard, Settings, List, BarChart3 } from 'lucide-react';
+import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, History, LayoutDashboard, Settings, List, BarChart3, PanelLeftClose } from 'lucide-react';
 import type { User } from '../../features/auth/types';
 import type { ChatStats } from '../../features/chat/chatAPI';
 import SettingsModal from '../common/SettingsModal';
@@ -26,6 +26,12 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Filter only user messages for the history list
   const userMessages = messages.filter(m => m.role === 'user').reverse();
+
+  const handleMobileNav = () => {
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -62,16 +68,19 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
           <button 
             onClick={onClose}
             aria-label="Close sidebar"
-            className="md:hidden p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+            className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <PanelLeftClose className="w-5 h-5" />
           </button>
         </div>
       
       <div className="flex-1 px-4 py-6 overflow-y-auto custom-scrollbar">
         <div className="mb-8">
           <button
-            onClick={onReset}
+            onClick={() => {
+              onReset();
+              handleMobileNav();
+            }}
             className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl transition-all duration-300 shadow-lg shadow-emerald-900/20 hover:shadow-emerald-900/40 font-semibold group transform hover:scale-[1.02]"
           >
             <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
@@ -83,6 +92,7 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
             
             <Link
               to="/dashboard"
+              onClick={handleMobileNav}
               className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-linear-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -92,6 +102,7 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
 
             <Link
               to="/categories"
+              onClick={handleMobileNav}
               className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
             >
                <div className="absolute inset-0 bg-linear-to-r from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -101,6 +112,7 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
 
             <Link
               to="/analytics"
+              onClick={handleMobileNav}
               className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
             >
                <div className="absolute inset-0 bg-linear-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

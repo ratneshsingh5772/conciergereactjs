@@ -26,7 +26,10 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Default to open on desktop (md breakpoint is 768px), closed on mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => 
+    typeof globalThis.window === 'object' ? globalThis.window.innerWidth >= 768 : false
+  );
   const [stats, setStats] = useState<ChatStats | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -164,10 +167,10 @@ const ChatPage = () => {
         </div>
 
         {/* Desktop Toggle Button */}
-        <div className="hidden md:block absolute top-4 left-4 z-20">
+        <div className="hidden md:block absolute top-4 left-4 z-50">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2.5 hover:bg-white hover:shadow-md rounded-xl text-slate-400 hover:text-slate-800 transition-all border border-transparent hover:border-slate-100"
+            className="p-2.5 bg-white hover:bg-slate-50 shadow-md shadow-slate-200/50 rounded-xl text-slate-600 hover:text-slate-900 transition-all border border-slate-200"
             title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
             {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
