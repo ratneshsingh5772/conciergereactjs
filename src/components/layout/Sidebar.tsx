@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { LogOut, RefreshCw, User as UserIcon, MessageSquare, LayoutDashboard, Settings, List, BarChart3, PanelLeftClose } from 'lucide-react';
 import type { User } from '../../features/auth/types';
-import type { ChatStats } from '../../features/chat/chatAPI';
 import SettingsModal from '../common/SettingsModal';
 import { formatMessageContent } from '../../utils/currencyFormatter';
 
@@ -14,7 +13,6 @@ interface Message {
 
 interface SidebarProps {
   user: User | null;
-  stats: ChatStats | null;
   messages?: Message[];
   onLogout: () => void;
   onReset: () => void;
@@ -56,6 +54,17 @@ const Sidebar = ({ user, messages = [], onLogout, onReset, isOpen, onClose }: Si
       `}>
         <div className="w-72 flex flex-col h-full overflow-hidden">
         <div className="p-4 pt-6 flex items-center justify-between">
+           {/* Logo Section */}
+           <div className="flex items-center gap-2.5 pl-2 opacity-100 transition-opacity select-none">
+            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-br from-blue-600 via-indigo-500 to-purple-600 shadow-lg shadow-blue-500/20 group cursor-default">
+              <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span className="text-white font-bold text-sm tracking-wider font-sans">RA</span>
+            </div>
+            <span className="text-[19px] font-semibold tracking-tight text-[#1f1f1f]">
+              Rudra<span className="text-slate-500 font-normal ml-0.5">AI</span>
+            </span>
+          </div>
+          
           <button 
             onClick={onClose}
             aria-label="Close sidebar"
@@ -72,7 +81,7 @@ const Sidebar = ({ user, messages = [], onLogout, onReset, isOpen, onClose }: Si
               onReset();
               handleMobileNav();
             }}
-            className="flex items-center gap-3 py-3 px-4 bg-[#dde3ea] hover:bg-[#d0d7de] text-[#1f1f1f] rounded-[16px] transition-colors duration-200 text-sm font-medium w-fit min-w-35"
+            className="flex items-center gap-3 py-3 px-4 bg-[#dde3ea] hover:bg-[#d0d7de] text-[#1f1f1f] rounded-2xl transition-colors duration-200 text-sm font-medium w-fit min-w-35 shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
             <span>New chat</span>
@@ -133,17 +142,20 @@ const Sidebar = ({ user, messages = [], onLogout, onReset, isOpen, onClose }: Si
       </div>
 
       <div className="p-4 bg-[#f0f4f9]">
-        <div className="flex items-center gap-3 mb-2 p-2 hover:bg-[#e3e3e3] rounded-full transition-colors cursor-pointer" onClick={() => setIsSettingsOpen(true)}>
-          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-medium">
+        <button 
+          className="w-full flex items-center gap-3 mb-2 p-2 hover:bg-[#e3e3e3] rounded-full transition-colors cursor-pointer text-left focus:outline-hidden focus:ring-2 focus:ring-slate-200"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-medium shrink-0">
             {user?.firstName?.[0] || <UserIcon className="w-4 h-4" />}
           </div>
-          <div className="overflow-hidden flex-1">
-            <p className="text-sm text-[#1f1f1f] truncate">
+          <div className="overflow-hidden flex-1 min-w-0">
+            <p className="text-sm text-[#1f1f1f] truncate font-medium">
               {user?.email}
             </p>
           </div>
-          <Settings className="w-4 h-4 text-[#444746]" />
-        </div>
+          <Settings className="w-4 h-4 text-[#444746] shrink-0" />
+        </button>
         
         <div className="px-2">
             <button

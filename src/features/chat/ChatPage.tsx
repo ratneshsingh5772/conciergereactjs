@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout, fetchProfile } from '../auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { streamMessage } from '../../services/sse';
-import { getChatHistory, getChatStats, resetChatSession, type ChatStats } from './chatAPI';
-import { Menu } from 'lucide-react';
+import { getChatHistory, resetChatSession } from './chatAPI';
+import { Menu, BarChart3, PiggyBank, TrendingUp, PieChart, Compass } from 'lucide-react';
 import Sidebar from '../../components/layout/Sidebar';
 import MessageBubble from '../../components/chat/MessageBubble';
 import ChatInput from '../../components/chat/ChatInput';
@@ -30,7 +30,6 @@ const ChatPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => 
     typeof globalThis.window === 'object' ? globalThis.window.innerWidth >= 768 : false
   );
-  const [stats, setStats] = useState<ChatStats | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -40,15 +39,6 @@ const ChatPage = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const loadStats = useCallback(async (userId: string) => {
-    try {
-      const data = await getChatStats(userId);
-      setStats(data);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
-    }
-  }, []);
 
   useEffect(() => {
     const loadHistory = async (userId: string) => {
@@ -75,13 +65,12 @@ const ChatPage = () => {
     if (user?.id) {
       const initData = async () => {
         await loadHistory(user.id);
-        await loadStats(user.id);
       };
       initData();
     } else {
       dispatch(fetchProfile());
     }
-  }, [user?.id, dispatch, loadStats]);
+  }, [user?.id, dispatch]);
 
   const handleLogout = async () => {
     await dispatch(logout());
@@ -93,7 +82,6 @@ const ChatPage = () => {
     try {
       await resetChatSession(user.id);
       setMessages([]);
-      loadStats(user.id);
     } catch (error) {
       console.error('Failed to reset session:', error);
     }
@@ -129,7 +117,6 @@ const ChatPage = () => {
 
     const onComplete = () => {
       setIsStreaming(false);
-      loadStats(user.id);
     };
 
     try {
@@ -150,7 +137,6 @@ const ChatPage = () => {
     <div className="flex h-screen bg-slate-50">
       <Sidebar 
         user={user} 
-        stats={stats} 
         messages={messages}
         onLogout={handleLogout} 
         onReset={handleReset}
@@ -185,8 +171,13 @@ const ChatPage = () => {
             >
               <Menu className="w-6 h-6 text-slate-600" />
             </button>
-            <div className="flex items-center gap-2">
-                <span className="font-medium text-slate-700 text-[18px]">Rudra AI</span>
+            <div className="flex items-center gap-2.5 pl-1 select-none">
+                <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 via-indigo-500 to-purple-600 shadow-sm shadow-blue-500/20">
+                  <span className="text-white font-bold text-xs tracking-wider font-sans">RA</span>
+                </div>
+                <span className="text-[18px] font-semibold tracking-tight text-[#1f1f1f]">
+                  Rudra<span className="text-slate-500 font-normal ml-0.5">AI</span>
+                </span>
             </div>
           </div>
         </div>
@@ -207,21 +198,26 @@ const ChatPage = () => {
                 </div>
                 
                 {/* Suggestion Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 w-full max-w-2xl gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 w-full max-w-4xl px-2 md:px-0">
                     {[
-                        { label: "Analyze my spending habits", action: () => navigate('/analytics'), icon: "BarChart3" },
-                        { label: "Set up a monthly budget", action: () => handleSend("Help me set up a budget"), icon: "PiggyBank" },
-                        { label: "Investment recommendations", action: () => handleSend("What are good investment options?"), icon: "TrendingUp" },
-                        { label: "Compare expense categories", action: () => navigate('/categories'), icon: "PieChart" },
+                        { label: "Analyze spending", action: () => navigate('/analytics'), icon: BarChart3, color: "text-blue-500", bg: "bg-blue-50" },
+                        { label: "Create budget", action: () => handleSend("Help me set up a budget"), icon: PiggyBank, color: "text-emerald-500", bg: "bg-emerald-50" },
+                        { label: "Investment tips", action: () => handleSend("What are good investment options?"), icon: TrendingUp, color: "text-purple-500", bg: "bg-purple-50" },
+                        { label: "Compare expenses", action: () => navigate('/categories'), icon: PieChart, color: "text-amber-500", bg: "bg-amber-50" },
                     ].map((item) => (
                         <button
                             key={item.label}
                             onClick={item.action}
-                            className="h-32 p-5 text-left bg-[#f0f4f9] hover:bg-[#dfe4ea] rounded-2xl transition-all duration-200 flex flex-col justify-between group relative overflow-hidden"
+                            className="relative p-4 md:p-5 text-left bg-[#f0f4f9] hover:bg-[#dfe4ea] active:bg-[#d0d7de] rounded-2xl transition-all duration-200 flex flex-col justify-between h-32 md:h-40 group overflow-hidden"
                         >
-                            <span className="text-[15px] font-medium text-[#1f1f1f] pr-8 leading-snug">{item.label}</span>
-                            <div className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                               <span className="text-slate-700">→</span>
+                            <div className={`p-2 w-fit rounded-full ${item.bg} mb-3`}>
+                                <item.icon className={`w-5 h-5 md:w-6 md:h-6 ${item.color}`} />
+                            </div>
+                            <span className="text-[13px] md:text-[15px] font-medium text-[#1f1f1f] leading-snug tracking-tight">{item.label}</span>
+                            
+                            {/* Mobile visual cue */}
+                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
+                               <Compass className="w-4 h-4 text-slate-400 rotate-45" />
                             </div>
                         </button>
                     ))}
