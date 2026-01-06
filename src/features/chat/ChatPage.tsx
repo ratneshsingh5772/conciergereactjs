@@ -202,15 +202,24 @@ const ChatPage = () => {
                 </div>
                 
                 <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl">
-                  {['Analyze spending', 'Set budget', 'Investment tips', 'Savings'].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() => handleSend(suggestion)}
-                      className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
+                  <button
+                    onClick={() => navigate('/analytics')}
+                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
+                  >
+                    Analyze Spending
+                  </button>
+                  <button
+                    onClick={() => navigate('/categories')}
+                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
+                  >
+                    Investment Budget
+                  </button>
+                   <button
+                    onClick={() => navigate('/dashboard')}
+                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
+                  >
+                    Dashboard
+                  </button>
                 </div>
               </div>
             ) : (

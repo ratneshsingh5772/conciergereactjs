@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
-import { Calendar, TrendingUp, AlertCircle, ArrowLeft, Download, Filter, Loader2, AlertTriangle, Sparkles, Target, Wallet, GraduationCap, Bot } from 'lucide-react';
+import { Calendar, TrendingUp, AlertCircle, ArrowLeft, Download, Filter, Loader2, AlertTriangle, Sparkles, Target, Wallet, GraduationCap, Bot, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { fetchDailyTrend, fetchMonthlySpend, fetchAnalyticsSummary, fetchForecast } from './analyticsAPI';
@@ -107,12 +107,14 @@ const AnalyticsPage: React.FC = () => {
                 setError(null);
             } catch (err) {
                 console.warn('Failed to fetch analytics data, falling back to mock data:', err);
-                // Fallback to mock data on error
+                
+                // Fallback to MOCK DATA if API fails (which mimics a real scenario where we want to show a demo)
+                // If user truly wants empty state, they would have empty arrays from API.
+                // But error usually means backend is down or not implemented, so we show Mock.
                 setDailyData(MOCK_DAILY_DATA);
                 setMonthlyData(MOCK_MONTHLY_DATA);
                 setSummary(MOCK_SUMMARY);
                 setForecast(MOCK_FORECAST);
-                // Don't set error state so user sees the UI
             } finally {
                 setLoading(false);
             }
@@ -121,11 +123,53 @@ const AnalyticsPage: React.FC = () => {
         loadData();
     }, []);
 
+    const hasData = dailyData.length > 0 || monthlyData.length > 0;
 
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+                    <p className="text-slate-500 font-medium animate-pulse">Analyzing financial data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!hasData && !error) {
+        return (
+            <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 flex flex-col relative overflow-hidden">
+                <div className="fixed inset-0 pointer-events-none z-0">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-100/40 rounded-full blur-[120px]" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-100/40 rounded-full blur-[120px]" />
+                </div>
+
+                <div className="relative z-10 max-w-7xl mx-auto w-full flex-1 flex flex-col">
+                    <div className="mb-8">
+                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 group">
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Dashboard
+                        </Link>
+                        <h1 className="text-2xl font-bold text-slate-900">Financial Analytics</h1>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col items-center justify-center text-center max-w-lg mx-auto p-8 bg-white/60 backdrop-blur-xl border border-white/50 rounded-3xl shadow-sm">
+                        <div className="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 text-indigo-500 shadow-inner">
+                            <BarChart3 className="w-10 h-10" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-3">No Data Available Yet</h2>
+                        <p className="text-slate-500 mb-8 leading-relaxed">
+                            We need a bit more transaction history to generate meaningful analytics. Start using the Concierge chat to track your expenses!
+                        </p>
+                        <Link 
+                            to="/" 
+                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300 active:scale-95 font-medium"
+                        >
+                            <Bot className="w-5 h-5" />
+                            <span>Start Tracking with AI</span>
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -350,7 +394,7 @@ const AnalyticsPage: React.FC = () => {
                                 <div>
                                     <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Month-End Project</p>
                                     <h3 className="text-2xl font-bold text-slate-900">
-                                        {forecast ? formatCurrency(forecast.predictedMonthEndSpend) : formatCurrency(0)}
+                                        {formatCurrency(forecast?.predictedMonthEndSpend || 0)}
                                     </h3>
                                 </div>
                                 <div className="p-2 bg-indigo-100/50 rounded-lg text-indigo-600">
@@ -370,7 +414,7 @@ const AnalyticsPage: React.FC = () => {
                                 <div>
                                     <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Year-End Project</p>
                                     <h3 className="text-2xl font-bold text-slate-900">
-                                        {forecast ? formatCurrency(forecast.predictedYearEndSpend) : formatCurrency(0)}
+                                        {formatCurrency(forecast?.predictedYearEndSpend || 0)}
                                     </h3>
                                 </div>
                                 <div className="p-2 bg-emerald-100/50 rounded-lg text-emerald-600">
@@ -391,18 +435,18 @@ const AnalyticsPage: React.FC = () => {
                                     <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Predicted Next Expense</p>
                                     <div className="flex flex-col gap-1 mb-1">
                                         <h3 className="text-xl font-bold text-slate-900">
-                                            {forecast?.nextLikelySpend.category}
+                                            {forecast?.nextLikelySpend?.category || 'N/A'}
                                         </h3>
                                         <span className={`w-fit px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                            forecast?.nextLikelySpend.confidence === 'High' 
+                                            forecast?.nextLikelySpend?.confidence === 'High' 
                                             ? 'bg-emerald-100 text-emerald-700' 
                                             : 'bg-slate-100 text-slate-600'
                                         }`}>
-                                            {forecast?.nextLikelySpend.confidence} Confidence
+                                            {forecast?.nextLikelySpend?.confidence || 'Unknown'} Confidence
                                         </span>
                                     </div>
                                     <p className="text-slate-400 font-medium mt-1">
-                                        ~{forecast ? formatCurrency(forecast.nextLikelySpend.estimatedAmount) : formatCurrency(0)}
+                                        ~{formatCurrency(forecast?.nextLikelySpend?.estimatedAmount || 0)}
                                     </p>
                                 </div>
                                 <div className="p-2 bg-amber-100/50 rounded-lg text-amber-600">
