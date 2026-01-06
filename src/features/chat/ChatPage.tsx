@@ -156,12 +156,18 @@ const ChatPage = () => {
       />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col h-dvh relative bg-white transition-all duration-300">
+      <div className="flex-1 flex flex-col h-dvh relative bg-white transition-all duration-300 overflow-hidden">
+        {/* Ambient Background */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+             <div className="absolute top-[-50%] right-[-10%] w-[70%] h-[70%] bg-emerald-50/50 rounded-full blur-[120px]" />
+             <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-50/50 rounded-full blur-[100px]" />
+        </div>
+
         {/* Desktop Toggle Button */}
         <div className="hidden md:block absolute top-4 left-4 z-20">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors"
+            className="p-2.5 hover:bg-white hover:shadow-md rounded-xl text-slate-400 hover:text-slate-800 transition-all border border-transparent hover:border-slate-100"
             title={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
             {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
@@ -169,57 +175,59 @@ const ChatPage = () => {
         </div>
 
         {/* Header for Mobile */}
-        <div className="md:hidden px-4 py-3 bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <div className="md:hidden px-4 py-3 bg-white/80 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-30 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="p-2 -ml-2 mr-1 hover:bg-gray-100 rounded-full transition-colors active:bg-gray-200"
+              className="p-2 -ml-2 hover:bg-slate-100 rounded-xl transition-colors active:bg-slate-200"
             >
-              <Menu className="w-6 h-6 text-gray-600" />
+              <Menu className="w-6 h-6 text-slate-600" />
             </button>
-            <div className="bg-blue-50 p-1.5 rounded-lg">
-              <Bot className="w-5 h-5 text-blue-600" />
+            <div className="flex items-center gap-2">
+                <div className="bg-linear-to-tr from-emerald-500 to-cyan-500 p-1.5 rounded-lg shadow-sm">
+                    <Bot className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-slate-900 text-[16px]">Rudra AI</span>
             </div>
-            <span className="font-semibold text-gray-900 text-[17px]">Concierge</span>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto scroll-smooth">
+        <div className="flex-1 overflow-y-auto scroll-smooth relative z-10">
           <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8 pb-32 md:pb-40">
             {messages.length === 0 ? (
-              <div className="h-[60vh] flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in zoom-in-95 duration-500 px-4">
-                <div className="flex flex-col items-center max-w-lg w-full">
-                  <div className="bg-linear-to-br from-blue-500 to-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-200 mb-6">
-                    <Bot className="w-8 h-8 text-white" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-medium text-gray-900 mb-3 tracking-tight">
-                    Hi {user?.firstName}
-                  </h2>
-                  <p className="text-gray-500 text-[16px] md:text-lg max-w-xs md:max-w-md mx-auto leading-relaxed">
-                    I can help you track expenses, set budgets, or plan investments.
-                  </p>
-                </div>
+              <div className="h-[70vh] flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-700 px-4">
                 
-                <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl">
-                  <button
-                    onClick={() => navigate('/analytics')}
-                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
-                  >
-                    Analyze Spending
-                  </button>
-                  <button
-                    onClick={() => navigate('/categories')}
-                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
-                  >
-                    Investment Budget
-                  </button>
-                   <button
-                    onClick={() => navigate('/dashboard')}
-                    className="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 rounded-xl text-[14px] font-medium text-gray-700 transition-all flex items-center gap-2"
-                  >
-                    Dashboard
-                  </button>
+                <div className="relative mb-8 group">
+                   <div className="absolute inset-0 bg-linear-to-r from-emerald-400 to-cyan-400 blur-2xl opacity-20 group-hover:opacity-30 transition-opacity rounded-full" />
+                   <div className="relative bg-white p-5 rounded-3xl shadow-xl shadow-slate-200 border border-slate-100">
+                     <Bot className="w-12 h-12 text-emerald-600" />
+                   </div>
+                </div>
+
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
+                    Hello, <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-cyan-600">{user?.firstName}</span>
+                </h2>
+                <p className="text-slate-500 text-lg max-w-md mx-auto leading-relaxed mb-12">
+                    I'm your personal financial concierge. How can I assist you today?
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
+                    {[
+                        { label: "Analyze my spending habits", action: () => navigate('/analytics'), icon: "📊" },
+                        { label: "Set up a monthly budget", action: () => handleSend("Help me set up a budget"), icon: "💰" },
+                        { label: "Investment recommendations", action: () => handleSend("What are good investment options?"), icon: "📈" },
+                        { label: "View my dashboard", action: () => navigate('/dashboard'), icon: "⚡" },
+                    ].map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={item.action}
+                            className="flex items-center gap-4 p-4 bg-white hover:bg-slate-50 border border-slate-100 hover:border-emerald-200 rounded-2xl shadow-sm hover:shadow-md transition-all text-left group"
+                        >
+                            <span className="text-2xl bg-slate-50 group-hover:bg-white p-2 rounded-xl transition-colors">{item.icon}</span>
+                            <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">{item.label}</span>
+                        </button>
+                    ))}
                 </div>
               </div>
             ) : (
