@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard, Settings } from 'lucide-react';
+import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard, Settings, List } from 'lucide-react';
 import type { User } from '../../features/auth/types';
 import type { ChatStats } from '../../features/chat/chatAPI';
 import SettingsModal from '../common/SettingsModal';
@@ -88,6 +88,16 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
               <LayoutDashboard className="w-4 h-4 text-purple-600" />
             </div>
             <span className="text-sm">Dashboard</span>
+          </Link>
+
+          <Link
+            to="/categories"
+            className="w-full flex items-center gap-3 py-3 px-4 mt-2 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-full transition-all duration-200 shadow-sm hover:shadow-md font-medium group"
+          >
+            <div className="bg-amber-50 p-1.5 rounded-full group-hover:bg-amber-100 transition-colors">
+              <List className="w-4 h-4 text-amber-600" />
+            </div>
+            <span className="text-sm">Categories</span>
           </Link>
         </div>
 
