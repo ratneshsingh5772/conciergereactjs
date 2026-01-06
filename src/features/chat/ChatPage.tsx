@@ -162,9 +162,9 @@ const ChatPage = () => {
       <div className="flex-1 flex flex-col h-dvh relative bg-white transition-all duration-300 overflow-hidden">
         
         {/* Google-like Clean Header Bar */}
-        <div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-4 z-40">
+        <div className="absolute top-0 left-0 right-0 h-16 hidden md:flex items-center justify-between px-4 z-40">
            {/* Desktop Toggle Button - Integrated into Header */}
-            <div className={`hidden md:flex items-center transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <div className={`flex items-center transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
               <button 
                 onClick={() => setIsSidebarOpen(true)}
                 className="p-2.5 bg-transparent hover:bg-slate-100 rounded-full text-slate-600 hover:text-slate-900 transition-colors"
@@ -197,11 +197,11 @@ const ChatPage = () => {
               <div className="min-h-[70vh] flex flex-col items-center justify-center animate-in fade-in duration-700">
                 
                 {/* Greeting Section */}
-                <div className="text-left md:text-left w-full max-w-2xl mb-12">
-                   <h2 className="text-5xl md:text-6xl font-medium tracking-tight text-[#c4c7c5] mb-2">
+                <div className="text-left md:text-left w-full max-w-2xl mb-8 md:mb-12">
+                   <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-[#c4c7c5] mb-2">
                       Hello, <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-purple-500">{user?.firstName}</span>
                    </h2>
-                   <h2 className="text-5xl md:text-6xl font-medium tracking-tight text-[#444746]">
+                   <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-[#444746]">
                       How can I help you today?
                    </h2>
                 </div>

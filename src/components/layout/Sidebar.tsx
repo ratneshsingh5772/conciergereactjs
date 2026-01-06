@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, History, LayoutDashboard, Settings, List, BarChart3, PanelLeftClose } from 'lucide-react';
+import { LogOut, RefreshCw, User as UserIcon, MessageSquare, LayoutDashboard, Settings, List, BarChart3, PanelLeftClose } from 'lucide-react';
 import type { User } from '../../features/auth/types';
 import type { ChatStats } from '../../features/chat/chatAPI';
 import SettingsModal from '../common/SettingsModal';
@@ -22,7 +22,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClose }: SidebarProps) => {
+const Sidebar = ({ user, messages = [], onLogout, onReset, isOpen, onClose }: SidebarProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Filter only user messages for the history list
   const userMessages = messages.filter(m => m.role === 'user').reverse();
@@ -40,103 +40,88 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
       <button
         type="button"
         aria-label="Close sidebar"
-        className={`fixed inset-0 w-full h-full bg-gray-900/50 z-40 md:hidden backdrop-blur-sm transition-opacity duration-300 border-none cursor-default ${
+        className={`fixed inset-0 w-full h-full bg-slate-500/30 z-40 md:hidden backdrop-blur-[2px] transition-opacity duration-300 border-none cursor-default ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
 
       <div className={`
-        fixed inset-y-0 left-0 z-50 bg-slate-900 text-slate-300 flex flex-col h-full border-r border-slate-800 
-        transition-all duration-300 ease-in-out shadow-2xl md:shadow-none overflow-hidden
+        fixed inset-y-0 left-0 z-50 bg-[#f0f4f9] text-[#444746] flex flex-col h-full 
+        transition-all duration-300 ease-in-out shadow-lg md:shadow-none overflow-hidden
         w-72
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         md:relative md:translate-x-0
-        ${isOpen ? 'md:w-72' : 'md:w-0 md:border-r-0'}
+        ${isOpen ? 'md:w-72' : 'md:w-0'}
       `}>
         <div className="w-72 flex flex-col h-full overflow-hidden">
-        <div className="p-6 flex items-center justify-between border-b border-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className="bg-linear-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/20">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Rudra AI</h1>
-              <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Personal Concierge</p>
-            </div>
-          </div>
+        <div className="p-4 pt-6 flex items-center justify-between">
           <button 
             onClick={onClose}
             aria-label="Close sidebar"
-            className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+            className="md:hidden p-2 hover:bg-[#e3e3e3] rounded-full text-[#444746] transition-colors"
           >
             <PanelLeftClose className="w-5 h-5" />
           </button>
         </div>
       
-      <div className="flex-1 px-4 py-6 overflow-y-auto custom-scrollbar">
-        <div className="mb-8">
+      <div className="flex-1 px-4 overflow-y-auto custom-scrollbar">
+        <div className="mb-6">
           <button
             onClick={() => {
               onReset();
               handleMobileNav();
             }}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl transition-all duration-300 shadow-lg shadow-emerald-900/20 hover:shadow-emerald-900/40 font-semibold group transform hover:scale-[1.02]"
+            className="flex items-center gap-3 py-3 px-4 bg-[#dde3ea] hover:bg-[#d0d7de] text-[#1f1f1f] rounded-[16px] transition-colors duration-200 text-sm font-medium w-fit min-w-35"
           >
-            <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-            <span>New Conversation</span>
+            <RefreshCw className="w-4 h-4" />
+            <span>New chat</span>
           </button>
 
-          <div className="mt-8 space-y-2">
-            <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Menu</p>
+          <div className="mt-8 space-y-1">
+            <p className="px-4 text-[11px] font-medium text-[#444746] mb-2">Recent</p>
             
             <Link
               to="/dashboard"
               onClick={handleMobileNav}
-              className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
+              className="flex items-center gap-3 py-2 px-4 text-[#444746] hover:bg-[#e3e3e3] hover:text-[#1f1f1f] rounded-full transition-colors duration-200"
             >
-              <div className="absolute inset-0 bg-linear-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LayoutDashboard className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" />
-              <span className="font-medium relative z-10">Dashboard</span>
+              <LayoutDashboard className="w-4 h-4" />
+              <span className="text-sm">Dashboard</span>
             </Link>
 
             <Link
               to="/categories"
               onClick={handleMobileNav}
-              className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
+              className="flex items-center gap-3 py-2 px-4 text-[#444746] hover:bg-[#e3e3e3] hover:text-[#1f1f1f] rounded-full transition-colors duration-200"
             >
-               <div className="absolute inset-0 bg-linear-to-r from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <List className="w-5 h-5 text-amber-400 group-hover:text-amber-300 transition-colors" />
-              <span className="font-medium relative z-10">Categories</span>
+              <List className="w-4 h-4" />
+              <span className="text-sm">Categories</span>
             </Link>
 
             <Link
               to="/analytics"
               onClick={handleMobileNav}
-              className="flex items-center gap-3 py-3 px-4 text-slate-300 hover:bg-slate-800/50 hover:text-white rounded-xl transition-all duration-200 group relative overflow-hidden"
+              className="flex items-center gap-3 py-2 px-4 text-[#444746] hover:bg-[#e3e3e3] hover:text-[#1f1f1f] rounded-full transition-colors duration-200"
             >
-               <div className="absolute inset-0 bg-linear-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <BarChart3 className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-              <span className="font-medium relative z-10">Analytics</span>
+              <BarChart3 className="w-4 h-4" />
+              <span className="text-sm">Analytics</span>
             </Link>
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {userMessages.length > 0 && (
             <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 px-4 flex items-center gap-2">
-                <History className="w-3 h-3" />
-                Recent Activity
-              </h3>
-              <div className="space-y-1">
+              <p className="px-4 text-[11px] font-medium text-[#444746] mb-2">History</p>
+              <div className="space-y-0.5">
                 {userMessages.map((msg) => (
                   <button
                     key={msg.id}
-                    className="w-full text-left py-2.5 px-4 rounded-xl hover:bg-slate-800/50 text-slate-400 hover:text-slate-200 transition-colors group flex items-center gap-3 relative overflow-hidden"
+                    className="w-full text-left py-2 px-4 rounded-full hover:bg-[#e3e3e3] text-[#444746] hover:text-[#1f1f1f] transition-colors flex items-center gap-3 group"
                   >
-                    <MessageSquare className="w-4 h-4 text-slate-600 group-hover:text-emerald-400 shrink-0 transition-colors" />
-                    <span className="text-sm truncate font-medium relative z-10 group-hover:translate-x-1 transition-transform">
+                    <MessageSquare className="w-4 h-4 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="text-sm truncate">
                       {formatMessageContent(msg.content, user?.currencyCode)}
                     </span>
                   </button>
@@ -144,54 +129,29 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
               </div>
             </div>
           )}
-
-          <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 px-4">
-              Session Stats
-            </h3>
-            <div className="grid grid-cols-2 gap-3 px-1">
-              <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                <div className="text-xs text-slate-400 mb-1 font-medium">Messages</div>
-                <div className="text-xl font-bold text-white">{stats?.totalMessages || 0}</div>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                <div className="text-xs text-slate-400 mb-1 font-medium">Status</div>
-                <div className={`text-sm font-bold flex items-center gap-2 ${stats?.sessionActive ? 'text-emerald-400' : 'text-slate-500'}`}>
-                   {stats?.sessionActive && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
-                  {stats?.sessionActive ? 'Active' : 'Idle'}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      <div className="p-4 border-t border-slate-800 bg-slate-900/50">
-        <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-emerald-500/50 transition-colors group">
-          <div className="w-10 h-10 rounded-full bg-linear-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg shadow-emerald-900/20 group-hover:scale-105 transition-transform">
-            {user?.firstName?.[0] || <UserIcon className="w-5 h-5" />}
+      <div className="p-4 bg-[#f0f4f9]">
+        <div className="flex items-center gap-3 mb-2 p-2 hover:bg-[#e3e3e3] rounded-full transition-colors cursor-pointer" onClick={() => setIsSettingsOpen(true)}>
+          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-medium">
+            {user?.firstName?.[0] || <UserIcon className="w-4 h-4" />}
           </div>
           <div className="overflow-hidden flex-1">
-            <p className="text-sm font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
-              {user?.firstName} {user?.lastName}
+            <p className="text-sm text-[#1f1f1f] truncate">
+              {user?.email}
             </p>
-            <p className="text-[10px] text-slate-400 truncate font-medium">{user?.email}</p>
           </div>
+          <Settings className="w-4 h-4 text-[#444746]" />
         </div>
-        <div className="grid grid-cols-2 gap-2">
-            <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl border border-transparent hover:border-slate-700 transition-all duration-200 text-xs font-semibold"
-            >
-            <Settings className="w-4 h-4" />
-            <span>Settings</span>
-            </button>
+        
+        <div className="px-2">
             <button
             onClick={onLogout}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl border border-transparent hover:border-red-500/20 transition-all duration-200 text-xs font-semibold"
+            className="flex items-center gap-2 text-xs text-[#444746] hover:text-red-600 transition-colors py-1"
             >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
+            <LogOut className="w-3 h-3" />
+            <span>Sign out</span>
             </button>
         </div>
       </div>
