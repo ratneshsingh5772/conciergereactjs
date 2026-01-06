@@ -7,13 +7,17 @@ import { Lock, Mail, Loader2, Sparkles, BrainCircuit, ArrowRight } from 'lucide-
 const LoginPage = () => {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const resultAction = await dispatch(login({ usernameOrEmail, password }));
+    const resultAction = await dispatch(login({ 
+      credentials: { usernameOrEmail, password },
+      rememberMe 
+    }));
     if (login.fulfilled.match(resultAction)) {
       navigate('/');
     }
@@ -122,7 +126,12 @@ const LoginPage = () => {
 
                         <div className="flex items-center justify-between text-sm">
                             <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                                <input 
+                                    type="checkbox" 
+                                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 bg-slate-50"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)} 
+                                />
                                 <span className="text-slate-600">Remember me</span>
                             </label>
                             <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500 bg-transparent border-none p-0 cursor-pointer">Forgot password?</button>
