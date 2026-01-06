@@ -99,6 +99,19 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
+export const updateUserCurrency = createAsyncThunk(
+  'auth/updateCurrency',
+  async ({ userId, currencyCode }: { userId: string; currencyCode: string }, { rejectWithValue }) => {
+    try {
+      const user = await authAPI.updateCurrency(userId, currencyCode);
+      return user;
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      return rejectWithValue(error.response?.data?.message || 'Failed to update currency');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -165,6 +178,22 @@ const authSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload;
         localStorage.setItem('user', JSON.stringify(action.payload));
+      })
+      // Update Currency
+      .addCase(updateUserCurrency.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateUserCurrency.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+            state.user.currencyCode = action.payload.currencyCode;
+            // Update local storage
+            localStorage.setItem('user', JSON.stringify(state.user));
+        }
+      })
+      .addCase(updateUserCurrency.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

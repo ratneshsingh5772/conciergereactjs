@@ -5,6 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
+  currencyCode?: string; // e.g., 'USD', 'INR', 'EUR'
 }
 
 export interface AuthResponse {

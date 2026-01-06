@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
-import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard } from 'lucide-react';
+import { useState } from 'react';
+import { Bot, LogOut, RefreshCw, User as UserIcon, MessageSquare, X, History, LayoutDashboard, Settings } from 'lucide-react';
 import type { User } from '../../features/auth/types';
 import type { ChatStats } from '../../features/chat/chatAPI';
+import SettingsModal from '../common/SettingsModal';
+import { formatMessageContent } from '../../utils/currencyFormatter';
 
 interface Message {
   id: string;
@@ -20,11 +23,13 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClose }: SidebarProps) => {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Filter only user messages for the history list
   const userMessages = messages.filter(m => m.role === 'user').reverse();
 
   return (
     <>
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       {/* Mobile Backdrop */}
       <button
         type="button"
@@ -101,7 +106,7 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
                   >
                     <MessageSquare className="w-4 h-4 text-gray-400 group-hover:text-gray-600 shrink-0" />
                     <span className="text-sm text-gray-600 group-hover:text-gray-900 truncate font-medium">
-                      {msg.content}
+                      {formatMessageContent(msg.content, user?.currencyCode)}
                     </span>
                   </button>
                 ))}
@@ -141,13 +146,22 @@ const Sidebar = ({ user, stats, messages = [], onLogout, onReset, isOpen, onClos
             <p className="text-[11px] text-gray-500 truncate">{user?.email}</p>
           </div>
         </div>
-        <button
-          onClick={onLogout}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 text-xs font-medium mt-2"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span>Sign Out</span>
-        </button>
+        <div className="flex gap-2 mt-2">
+            <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-all duration-200 text-xs font-medium"
+            >
+            <Settings className="w-3.5 h-3.5" />
+            <span>Settings</span>
+            </button>
+            <button
+            onClick={onLogout}
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 text-xs font-medium"
+            >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+            </button>
+        </div>
       </div>
       </div>
     </div>

@@ -220,6 +220,7 @@ const ChatPage = () => {
                   role={msg.role}
                   content={msg.content}
                   isStreaming={isStreaming && index === messages.length - 1 && msg.role === 'assistant'}
+                  currencyCode={user?.currencyCode}
                 />
               ))
             )}

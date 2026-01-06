@@ -5,11 +5,13 @@ import { fetchDashboardStats } from './dashboardSlice';
 import { fetchBudgets, createCategoryBudget, createTotalBudget, updateBudget, fetchCategories } from '../budget/budgetSlice';
 import { Loader2, TrendingUp, TrendingDown, DollarSign, CreditCard, ArrowLeft, Plus, Settings, Calendar } from 'lucide-react';
 import BudgetModal from '../budget/BudgetModal';
+import { formatCurrency } from '../../utils/currencyFormatter';
 import type { BudgetPeriod, Budget } from '../budget/types';
 import type { BudgetStatus, CategoryBreakdown } from './types';
 
 const BudgetCard = ({ budget, onClick }: { budget: BudgetStatus; onClick: () => void }) => {
   const progressRef = useRef<HTMLDivElement>(null);
+  const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (progressRef.current) {
@@ -37,9 +39,9 @@ const BudgetCard = ({ budget, onClick }: { budget: BudgetStatus; onClick: () => 
             <Settings className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
         </h4>
         <p className="text-sm text-slate-500">
-            <span className="font-medium text-slate-900">${budget.spent.toFixed(0)}</span>
+            <span className="font-medium text-slate-900">{formatCurrency(budget.spent, user?.currencyCode)}</span>
             <span className="mx-1 text-slate-300">/</span>
-            ${budget.budgetLimit.toFixed(0)}
+            {formatCurrency(budget.budgetLimit, user?.currencyCode)}
         </p>
       </div>
 
@@ -55,7 +57,7 @@ const BudgetCard = ({ budget, onClick }: { budget: BudgetStatus; onClick: () => 
             ></div>
         </div>
         <p className={`text-xs font-medium ${budget.isOverBudget ? 'text-red-500' : 'text-slate-400'}`}>
-            {budget.isOverBudget ? `Over by $${Math.abs(budget.remaining).toFixed(0)}` : `${budget.remaining.toFixed(0)} left`}
+            {budget.isOverBudget ? `Over by ${formatCurrency(Math.abs(budget.remaining), user?.currencyCode)}` : `${formatCurrency(budget.remaining, user?.currencyCode)} left`}
         </p>
       </div>
     </button>
@@ -63,6 +65,7 @@ const BudgetCard = ({ budget, onClick }: { budget: BudgetStatus; onClick: () => 
 };
 
 const CategoryCard = ({ cat }: { cat: CategoryBreakdown }) => {
+  const user = useAppSelector((state) => state.auth.user);
   const iconRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,7 +91,7 @@ const CategoryCard = ({ cat }: { cat: CategoryBreakdown }) => {
       <div>
         <h4 className="font-semibold text-slate-900 mb-1 truncate" title={cat.categoryName}>{cat.categoryName}</h4>
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-slate-900">${cat.totalAmount.toFixed(0)}</span>
+          <span className="text-lg font-bold text-slate-900">{formatCurrency(cat.totalAmount, user?.currencyCode)}</span>
         </div>
         <p className="text-xs text-slate-400 mt-1">{cat.transactionCount} transactions</p>
       </div>
@@ -99,6 +102,7 @@ const CategoryCard = ({ cat }: { cat: CategoryBreakdown }) => {
 
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const { data, loading, error } = useAppSelector((state) => state.dashboard);
   const { budgets, categories } = useAppSelector((state) => state.budget);
   
@@ -204,7 +208,7 @@ const DashboardPage: React.FC = () => {
            <div className="relative z-10">
               <p className="text-sm font-medium text-slate-500 mb-1">Total Spent</p>
               <h3 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
-                ${data.totalSpentThisMonth.toFixed(2)}
+                {formatCurrency(data.totalSpentThisMonth, user?.currencyCode)}
               </h3>
               <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                 data.monthOverMonthChange > 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
@@ -313,7 +317,7 @@ const DashboardPage: React.FC = () => {
                       </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                      <span className="text-sm font-bold text-slate-900">-${expense.amount.toFixed(2)}</span>
+                      <span className="text-sm font-bold text-slate-900">{formatCurrency(-expense.amount, user?.currencyCode)}</span>
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, AlertCircle } from 'lucide-react';
+import { useAppSelector } from '../../app/hooks';
+import { getCurrencySymbol } from '../../utils/currencyFormatter';
 import type { BudgetPeriod } from './types';
 
 interface BudgetModalProps {
@@ -17,6 +19,7 @@ interface BudgetModalProps {
 }
 
 const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSubmit, initialData, categories }) => {
+  const user = useAppSelector((state) => state.auth.user);
   const [isTotalBudget, setIsTotalBudget] = useState(initialData?.isTotalBudget || false);
   const [categoryName, setCategoryName] = useState(initialData?.categoryName || categories[0] || '');
   const [amount, setAmount] = useState(initialData?.budgetAmount?.toString() || '');
@@ -93,7 +96,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onSubmit, in
           <div>
             <label htmlFor="budget-amount" className="block text-sm font-medium text-slate-700 mb-1">Budget Limit</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{getCurrencySymbol(user?.currencyCode)}</span>
               <input
                 id="budget-amount"
                 type="number"

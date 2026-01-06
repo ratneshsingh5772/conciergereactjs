@@ -1,14 +1,17 @@
 import { Bot } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { formatMessageContent } from '../../utils/currencyFormatter';
 
 interface MessageBubbleProps {
   role: 'user' | 'assistant';
   content: string;
   isStreaming?: boolean;
+  currencyCode?: string;
 }
 
-const MessageBubble = ({ role, content, isStreaming }: MessageBubbleProps) => {
+const MessageBubble = ({ role, content, isStreaming, currencyCode }: MessageBubbleProps) => {
   const isUser = role === 'user';
+  const formattedContent = currencyCode ? formatMessageContent(content, currencyCode) : content;
 
   return (
     <div
@@ -38,7 +41,7 @@ const MessageBubble = ({ role, content, isStreaming }: MessageBubbleProps) => {
           )}
         >
           <div className="whitespace-pre-wrap font-normal tracking-wide">
-            {content}
+            {formattedContent}
             {isStreaming && !isUser && (
               <span className="inline-flex ml-2 gap-1 align-baseline">
                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.3s]"></span>
