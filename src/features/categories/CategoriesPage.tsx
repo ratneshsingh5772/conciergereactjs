@@ -154,7 +154,7 @@ const CategoriesPage: React.FC = () => {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full border border-slate-200">
-                            {category.isSystem ? 'Default' : 'Default'}
+                            {category.isSystem ? 'System' : 'Default'}
                           </span>
                         </div>
                       </td>
