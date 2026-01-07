@@ -47,10 +47,10 @@
 ## ⚠️ Critical API Refactoring Requirement
 
 **Status**: Active Migration
-**Goal**: All Analytics endpoints must be user-scoped to support multi-user data isolation and admin auditing.
+**Goal**: Analytics and Budget endpoints must be user-scoped to support multi-user data isolation and admin auditing. Categories are global and do not require user scoping.
 
 ### Context
-Current implementation fetches global or implicitly scoped analytics (e.g., `/analytics/summary`). This needs to be changed to explicit user-based paths or query parameters to ensure we are fetching the *correct* user's data, especially for potential admin functionalities.
+Current implementation fetches global or implicitly scoped analytics and budgets (e.g., `/analytics/summary`, `/budgets`). This needs to be changed to explicit user-based paths or query parameters to ensure we are fetching the *correct* user's data, especially for potential admin functionalities. Categories remain global as they are shared across all users.
 
 ### Required Changes for Agents
 When working on `src/features/analytics/analyticsAPI.ts`, follow this migration pattern:
@@ -71,9 +71,9 @@ export const fetchDailyTrend = async (userId: string, days: number) => {
 ```
 
 **Implementation Checklist**:
-1.  **Update API Functions**: Modify functions in `analyticsAPI.ts` to accept `userId` as the first argument.
-2.  **Update Config**: If the backend endpoints have changed, update the URL paths to match the accepted pattern (likely `/users/:id/...` or `/analytics?userId=:id`).
-3.  **Update Components**: In `AnalyticsPage.tsx`, retrieve the current `userId` from the Redux auth state (`state.auth.user.id`) and pass it to the thunks/API calls.
+1.  **Update API Functions**: Modify functions in `analyticsAPI.ts` and `budgetAPI.ts` to accept `userId` as the first argument. Categories remain global.
+2.  **Update Config**: If the backend endpoints have changed, update the URL paths to match the accepted pattern (likely `/users/:id/...` or `/analytics?userId=:id`). Categories use `/categories`.
+3.  **Update Components**: In `AnalyticsPage.tsx` and budget-related components, retrieve the current `userId` from the Redux auth state (`state.auth.user.id`) and pass it to the thunks/API calls. Categories do not require userId.
 4.  **Verify Backend Contract**: Ensure the backend supports these new routes/params before finalizing frontend changes.
 
 ## Common Pitfalls

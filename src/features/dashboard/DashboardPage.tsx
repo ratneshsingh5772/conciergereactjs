@@ -68,15 +68,25 @@ const CategoryCard = ({ cat }: { cat: CategoryBreakdown }) => {
   const user = useAppSelector((state) => state.auth.user);
   const iconRef = useRef<HTMLDivElement>(null);
 
+  // Check if category is Insurance or Investment for green styling
+  const isGreenCategory = cat.categoryName.toLowerCase().includes('insurance') || 
+                         cat.categoryName.toLowerCase().includes('investment');
+
   useEffect(() => {
     if (iconRef.current) {
-      iconRef.current.style.setProperty('--bg-color', `${cat.categoryColor}15`);
-      iconRef.current.style.setProperty('--text-color', cat.categoryColor);
+      if (isGreenCategory) {
+        // Use green colors for Insurance and Investment categories
+        iconRef.current.style.setProperty('--bg-color', '#10b98115'); // green-500 with 15% opacity
+        iconRef.current.style.setProperty('--text-color', '#10b981'); // green-500
+      } else {
+        iconRef.current.style.setProperty('--bg-color', `${cat.categoryColor}15`);
+        iconRef.current.style.setProperty('--text-color', cat.categoryColor);
+      }
     }
-  }, [cat.categoryColor]);
+  }, [cat.categoryColor, isGreenCategory]);
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full cursor-default group">
+    <div className={`bg-white p-4 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full cursor-default group ${isGreenCategory ? 'ring-1 ring-green-200' : ''}`}>
       <div className="flex justify-between items-start mb-3">
         <div 
           ref={iconRef}
@@ -84,16 +94,16 @@ const CategoryCard = ({ cat }: { cat: CategoryBreakdown }) => {
         >
           {cat.categoryIcon}
         </div>
-        <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-100">
+        <span className={`text-xs font-bold px-2 py-1 rounded-full border ${isGreenCategory ? 'bg-green-50 text-green-600 border-green-100' : 'bg-slate-50 text-slate-600 border-slate-100'}`}>
           {cat.percentage.toFixed(0)}%
         </span>
       </div>
       <div>
-        <h4 className="font-semibold text-slate-900 mb-1 truncate" title={cat.categoryName}>{cat.categoryName}</h4>
+        <h4 className={`font-semibold mb-1 truncate ${isGreenCategory ? 'text-green-900' : 'text-slate-900'}`} title={cat.categoryName}>{cat.categoryName}</h4>
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-slate-900">{formatCurrency(cat.totalAmount, user?.currencyCode)}</span>
+          <span className={`text-lg font-bold ${isGreenCategory ? 'text-green-600' : 'text-slate-900'}`}>{formatCurrency(cat.totalAmount, user?.currencyCode)}</span>
         </div>
-        <p className="text-xs text-slate-400 mt-1">{cat.transactionCount} transactions</p>
+        <p className={`text-xs mt-1 ${isGreenCategory ? 'text-green-500' : 'text-slate-400'}`}>{cat.transactionCount} transactions</p>
       </div>
     </div>
   );
