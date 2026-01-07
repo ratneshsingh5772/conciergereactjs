@@ -1,8 +1,8 @@
 import api from '../../services/api';
 import type { CreateCategoryRequest, CategoryResponse, CategoryListResponse } from './types';
 
-export const getCategories = async (userId: string): Promise<CategoryListResponse> => {
-  const response = await api.get<CategoryListResponse>(`/users/${userId}/categories`);
+export const getCategories = async (): Promise<CategoryListResponse> => {
+  const response = await api.get<CategoryListResponse>('/categories');
   return response.data;
 };
 

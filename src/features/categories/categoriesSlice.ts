@@ -19,13 +19,9 @@ const initialState: CategoriesState = {
 
 export const fetchCategories = createAsyncThunk(
   'categories/fetch',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const state = getState() as { auth: { user: { id: string } } };
-      const userId = state.auth.user?.id;
-      if (!userId) throw new Error("User ID not found");
-
-      const response = await categoriesAPI.getCategories(userId);
+      const response = await categoriesAPI.getCategories();
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
