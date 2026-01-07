@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, ArrowLeft, Loader2, AlertCircle, LayoutGrid, List as ListIcon, X } from 'lucide-react';
-import { fetchCategories, createCategory, updateCategory, deleteCategory, clearError } from './categoriesSlice';
-import CategoryModal from './CategoryModal';
-import type { Category, CreateCategoryRequest } from './types';
+import { ArrowLeft, Loader2, AlertCircle, LayoutGrid, List as ListIcon, X } from 'lucide-react';
+import { fetchCategories, clearError } from './categoriesSlice';
 
 const CategoryIcon = ({ icon, color = '#3b82f6', className }: { icon?: string, color?: string, className: string }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -28,44 +26,13 @@ const CategoryIcon = ({ icon, color = '#3b82f6', className }: { icon?: string, c
 
 const CategoriesPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { items, loading, error, operationLoading } = useAppSelector((state) => state.categories);
+  const { items, loading, error } = useAppSelector((state) => state.categories);
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
-
-  const handleOpenCreate = () => {
-    setEditingCategory(undefined);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (category: Category) => {
-    setEditingCategory(category);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (globalThis.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
-      await dispatch(deleteCategory(id));
-    }
-  };
-
-  const handleSubmit = async (data: CreateCategoryRequest) => {
-    try {
-      if (editingCategory) {
-        await dispatch(updateCategory({ id: editingCategory.id, data })).unwrap();
-      } else {
-        await dispatch(createCategory(data)).unwrap();
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Failed to save category:', error);
-    }
-  };
 
   if (loading && items.length === 0) {
     return (
@@ -141,29 +108,9 @@ const CategoriesPage: React.FC = () => {
                   />
                   
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!category.isSystem && (
-                      <>
-                        <button 
-                          onClick={() => handleOpenEdit(category)}
-                          className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-indigo-600 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(category.id)}
-                          className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
-                    {category.isSystem && (
-                      <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                        System
-                      </span>
-                    )}
+                    <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                      {category.isSystem ? 'System' : 'Default'}
+                    </span>
                   </div>
                 </div>
                 
@@ -175,19 +122,6 @@ const CategoriesPage: React.FC = () => {
                 </p>
               </div>
             ))}
-            
-            {/* Empty State Add Button */}
-            {items.length === 0 && (
-              <button 
-                onClick={handleOpenCreate}
-                className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-2xl hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group min-h-50"
-              >
-                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                   <Plus className="w-6 h-6 text-slate-400 group-hover:text-indigo-500" />
-                </div>
-                <p className="font-medium text-slate-500 group-hover:text-indigo-600">Create your first category</p>
-              </button>
-            )}
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -219,28 +153,9 @@ const CategoriesPage: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {category.isSystem ? (
-                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full border border-slate-200">
-                              Default
-                            </span>
-                          ) : (
-                            <>
-                              <button 
-                                onClick={() => handleOpenEdit(category)}
-                                className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-indigo-600 rounded-lg transition-colors"
-                                title="Edit"
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </button>
-                              <button 
-                                onClick={() => handleDelete(category.id)}
-                                className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
+                          <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full border border-slate-200">
+                            {category.isSystem ? 'Default' : 'Default'}
+                          </span>
                         </div>
                       </td>
                     </tr>
@@ -249,7 +164,7 @@ const CategoriesPage: React.FC = () => {
                   {items.length === 0 && (
                      <tr>
                         <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                           No categories found. <button onClick={handleOpenCreate} className="text-indigo-600 hover:underline font-medium">Create one</button>
+                           No categories found.
                         </td>
                      </tr>
                   )}
@@ -257,16 +172,6 @@ const CategoriesPage: React.FC = () => {
               </table>
             </div>
           </div>
-        )}
-
-        {isModalOpen && (
-          <CategoryModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleSubmit}
-            initialData={editingCategory}
-            isLoading={operationLoading}
-          />
         )}
       </div>
     </div>
