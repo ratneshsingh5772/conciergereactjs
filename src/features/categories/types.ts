@@ -4,6 +4,7 @@ export interface Category {
   description?: string;
   icon?: string;
   color?: string;
+  isSystem?: boolean; // Distinguish system vs user categories
 }
 
 export interface CreateCategoryRequest {

@@ -90,14 +90,26 @@ const AnalyticsPage: React.FC = () => {
 
     useEffect(() => {
         const loadData = async () => {
+            if (!user?.id) {
+                // If no user, maybe show mock data or just wait?
+                // For now, let's keep the mock data fallback logic implicitly handled if real fetch fails, 
+                // but we can't fetch without ID. 
+                // However, the original code used mock data in the catch block.
+                // If we return here, loading stays true?
+                // Let's create an error inside the try block to trigger mock data if user is missing, 
+                // or just skip. 
+                // Actually, if !user, we are probably not authenticated or loading auth.
+                return; 
+            }
+
             try {
                 setLoading(true);
                 // Attempt to fetch real data
                 const [daily, monthly, summaryResult, forecastResult] = await Promise.all([
-                    fetchDailyTrend(10),
-                    fetchMonthlySpend(new Date().getFullYear()),
-                    fetchAnalyticsSummary(),
-                    fetchForecast()
+                    fetchDailyTrend(user.id, 10),
+                    fetchMonthlySpend(user.id, new Date().getFullYear()),
+                    fetchAnalyticsSummary(user.id),
+                    fetchForecast(user.id)
                 ]);
 
                 setDailyData(daily);
@@ -121,7 +133,7 @@ const AnalyticsPage: React.FC = () => {
         };
 
         loadData();
-    }, []);
+    }, [user?.id]);
 
     const hasData = dailyData.length > 0 || monthlyData.length > 0;
 

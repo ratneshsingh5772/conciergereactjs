@@ -19,9 +19,13 @@ const initialState: CategoriesState = {
 
 export const fetchCategories = createAsyncThunk(
   'categories/fetch',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await categoriesAPI.getCategories();
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await categoriesAPI.getCategories(userId);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -32,9 +36,13 @@ export const fetchCategories = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   'categories/create',
-  async (data: CreateCategoryRequest, { rejectWithValue }) => {
+  async (data: CreateCategoryRequest, { rejectWithValue, getState }) => {
     try {
-      const response = await categoriesAPI.createCategory(data);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await categoriesAPI.createCategory(userId, data);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -45,9 +53,13 @@ export const createCategory = createAsyncThunk(
 
 export const updateCategory = createAsyncThunk(
   'categories/update',
-  async ({ id, data }: { id: number; data: CreateCategoryRequest }, { rejectWithValue }) => {
+  async ({ id, data }: { id: number; data: CreateCategoryRequest }, { rejectWithValue, getState }) => {
     try {
-      const response = await categoriesAPI.updateCategory(id, data);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await categoriesAPI.updateCategory(userId, id, data);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -58,9 +70,13 @@ export const updateCategory = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
   'categories/delete',
-  async (id: number, { rejectWithValue }) => {
+  async (id: number, { rejectWithValue, getState }) => {
     try {
-      await categoriesAPI.deleteCategory(id);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      await categoriesAPI.deleteCategory(userId, id);
       return id;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;

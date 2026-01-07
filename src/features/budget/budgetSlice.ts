@@ -34,9 +34,13 @@ export const fetchCategories = createAsyncThunk(
 
 export const fetchBudgets = createAsyncThunk(
   'budget/fetchBudgets',
-  async (period: BudgetPeriod, { rejectWithValue }) => {
+  async (period: BudgetPeriod, { rejectWithValue, getState }) => {
     try {
-      const response = await budgetAPI.getBudgets(period);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await budgetAPI.getBudgets(userId, period);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -47,9 +51,13 @@ export const fetchBudgets = createAsyncThunk(
 
 export const createCategoryBudget = createAsyncThunk(
   'budget/createCategory',
-  async (data: CreateBudgetRequest, { rejectWithValue }) => {
+  async (data: CreateBudgetRequest, { rejectWithValue, getState }) => {
     try {
-      const response = await budgetAPI.createCategoryBudget(data);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await budgetAPI.createCategoryBudget(userId, data);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -60,9 +68,13 @@ export const createCategoryBudget = createAsyncThunk(
 
 export const createTotalBudget = createAsyncThunk(
   'budget/createTotal',
-  async (data: CreateBudgetRequest, { rejectWithValue }) => {
+  async (data: CreateBudgetRequest, { rejectWithValue, getState }) => {
     try {
-      const response = await budgetAPI.createTotalBudget(data);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      const response = await budgetAPI.createTotalBudget(userId, data);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -73,9 +85,13 @@ export const createTotalBudget = createAsyncThunk(
 
 export const updateBudget = createAsyncThunk(
   'budget/update',
-  async ({ id, data }: { id: number; data: UpdateBudgetRequest }, { rejectWithValue }) => {
+  async ({ id, data }: { id: number; data: UpdateBudgetRequest }, { rejectWithValue, getState }) => {
     try {
-      const response = await budgetAPI.updateBudget(id, data);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+      
+      const response = await budgetAPI.updateBudget(userId, id, data);
       return response.data;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -86,9 +102,13 @@ export const updateBudget = createAsyncThunk(
 
 export const deleteBudget = createAsyncThunk(
   'budget/delete',
-  async (id: number, { rejectWithValue }) => {
+  async (id: number, { rejectWithValue, getState }) => {
     try {
-      await budgetAPI.deleteBudget(id);
+      const state = getState() as { auth: { user: { id: string } } };
+      const userId = state.auth.user?.id;
+      if (!userId) throw new Error("User ID not found");
+
+      await budgetAPI.deleteBudget(userId, id);
       return id;
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
